@@ -29,7 +29,7 @@ const generatePassword = () => {
   password.value = pass
 }
 
-const API_URL = import.meta.env.VITE_API_URL || '/api'
+const API_URL = '/api'
 
 const handleContainerClick = async (event: MouseEvent) => {
   const target = event.target as HTMLElement
@@ -104,7 +104,7 @@ const handlePublish = async () => {
       throw new Error(data.error || 'Error al publicar el documento')
     }
 
-    generatedUrl.value = data.url
+    generatedUrl.value = `${window.location.origin}/s/${data.token}`
   } catch (err: any) {
     error.value = err.message || 'Error de conexión. Inténtalo más tarde.'
   } finally {

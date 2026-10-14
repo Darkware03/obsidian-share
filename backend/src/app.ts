@@ -7,7 +7,7 @@ import { z } from 'zod';
 import { generateToken, hashToken, hashPassword, verifyPassword } from './crypto';
 
 const maxMarkdownBytes = Number(process.env.MAX_MARKDOWN_BYTES) || 262144;
-const publicBaseUrl = process.env.PUBLIC_BASE_URL || 'http://localhost:8080';
+const publicBaseUrl = process.env.PUBLIC_BASE_URL || '';
 
 export const prisma = new PrismaClient();
 
@@ -80,7 +80,8 @@ export async function buildApp() {
         },
       });
 
-      const url = `${publicBaseUrl}/s/${token}`;
+      // Si publicBaseUrl no está definido, el frontend se encargará de construir la URL completa
+      const url = publicBaseUrl ? `${publicBaseUrl}/s/${token}` : `/s/${token}`;
       return reply.status(201).send({ url, token });
     } catch (error) {
       app.log.error(error);
