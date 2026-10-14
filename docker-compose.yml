@@ -1,0 +1,68 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: markdown_share_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-markdown_share}
+      POSTGRES_USER: ${POSTGRES_USER:-markdown_share}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-change_me_to_a_strong_password}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-markdown_share} -d ${POSTGRES_DB:-markdown_share}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - markdown_network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: markdown_share_backend
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-markdown_share}:${POSTGRES_PASSWORD:-change_me_to_a_strong_password}@db:5432/${POSTGRES_DB:-markdown_share}?schema=public
+      - MAX_MARKDOWN_BYTES=${MAX_MARKDOWN_BYTES:-262144}
+      - RATE_LIMIT_MAX=${RATE_LIMIT_MAX:-10}
+      - RATE_LIMIT_WINDOW_MS=${RATE_LIMIT_WINDOW_MS:-60000}
+    ports:
+      - "3000:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - markdown_network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - VITE_API_URL=${PUBLIC_BASE_URL:-http://localhost:8080}/api
+    container_name: markdown_share_frontend
+    restart: unless-stopped
+    ports:
+      - "${APP_PORT:-8080}:80"
+    depends_on:
+      - backend
+    networks:
+      - markdown_network
+
+networks:
+  markdown_network:
+    driver: bridge
+
+volumes:
+  pgdata:
