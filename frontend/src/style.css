@@ -59,7 +59,7 @@
 }
 
 .markdown-body pre {
-  @apply bg-surface2 rounded-md mb-4 text-sm relative overflow-hidden;
+  @apply bg-surface2 rounded-md mb-4 text-sm relative overflow-x-auto max-w-full;
 }
 
 .markdown-body pre.hljs {
@@ -67,15 +67,15 @@
 }
 
 .markdown-body code {
-  @apply bg-surface2 px-1.5 py-0.5 rounded text-sm font-mono text-primary;
+  @apply bg-surface2 px-1.5 py-0.5 rounded text-sm font-mono text-primary break-words;
 }
 
 .markdown-body pre code {
-  @apply bg-transparent p-4 block overflow-x-auto;
+  @apply bg-transparent p-4 block overflow-x-auto whitespace-pre;
 }
 
 .markdown-body .code-header {
-  @apply flex justify-between items-center bg-black/30 px-4 py-2 text-xs text-[#9CA3AF] border-b border-black/20;
+  @apply flex justify-between items-center bg-black/30 px-4 py-2 text-xs text-[#9CA3AF] border-b border-black/20 sticky left-0;
 }
 
 .markdown-body .code-header .copy-btn {
@@ -83,7 +83,7 @@
 }
 
 .markdown-body table {
-  @apply w-full mb-4 border-collapse;
+  @apply w-full mb-4 border-collapse block overflow-x-auto;
 }
 
 .markdown-body th, .markdown-body td {

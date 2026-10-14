@@ -248,9 +248,9 @@ onMounted(() => {
       </div>
 
       <div v-else-if="!isEditing" class="flex-1 overflow-y-auto w-full p-4 sm:p-8 md:p-12">
-        <div class="w-full max-w-4xl mx-auto flex-1 flex flex-col min-h-full">
-          <div class="bg-surface/50 rounded-2xl p-6 sm:p-10 border border-surface2 shadow-2xl flex-1">
-            <div class="markdown-body w-full" v-html="renderedMarkdown" @click="handleContainerClick"></div>
+        <div class="w-full max-w-4xl mx-auto flex-1 flex flex-col min-h-full min-w-0">
+          <div class="bg-surface/50 rounded-2xl p-6 sm:p-10 border border-surface2 shadow-2xl flex-1 min-w-0 overflow-x-hidden">
+            <div class="markdown-body w-full min-w-0" v-html="renderedMarkdown" @click="handleContainerClick"></div>
           </div>
           <footer class="w-full mt-12 mb-8 text-center text-secondary text-sm">
             Creado con Obsidian Share
@@ -268,12 +268,12 @@ onMounted(() => {
           ></textarea>
         </div>
         <!-- Preview side -->
-        <div class="flex-1 flex flex-col bg-surface/50 overflow-hidden min-h-[50%] md:min-h-0">
+        <div class="flex-1 flex flex-col bg-surface/50 overflow-hidden min-h-[50%] md:min-h-0 min-w-0">
            <div class="bg-surface px-4 py-2 flex items-center border-b border-surface2 shrink-0">
              <span class="text-xs font-bold text-secondary uppercase tracking-wider">Vista previa</span>
            </div>
-           <div class="flex-1 p-4 sm:p-8 overflow-y-auto">
-             <div class="markdown-body max-w-4xl mx-auto w-full" v-html="renderedEditMarkdown" @click="handleContainerClick"></div>
+           <div class="flex-1 p-4 sm:p-8 overflow-y-auto min-w-0 overflow-x-hidden">
+             <div class="markdown-body max-w-4xl mx-auto w-full min-w-0" v-html="renderedEditMarkdown" @click="handleContainerClick"></div>
            </div>
         </div>
       </div>
