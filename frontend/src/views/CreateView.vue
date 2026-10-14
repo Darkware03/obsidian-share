@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { renderMarkdown } from '@/utils/markdown'
+import { copyToClipboard } from '@/utils/clipboard'
 import { Copy, Plus, Trash2, Sun, Moon, Lock, Unlock, RefreshCw } from 'lucide-vue-next'
 import { useDark, useToggle } from '@vueuse/core'
 
@@ -36,15 +37,13 @@ const handleContainerClick = async (event: MouseEvent) => {
   if (target && target.classList.contains('copy-btn')) {
     const code = target.getAttribute('data-code')
     if (code) {
-      try {
-        await navigator.clipboard.writeText(decodeURIComponent(code))
+      const success = await copyToClipboard(decodeURIComponent(code))
+      if (success) {
         const originalText = target.innerText
         target.innerText = 'Copiado'
         setTimeout(() => {
           target.innerText = originalText
         }, 2000)
-      } catch (err) {
-        console.error('Failed to copy code', err)
       }
     }
   }
@@ -114,14 +113,12 @@ const handlePublish = async () => {
 
 const handleCopy = async () => {
   if (!generatedUrl.value) return
-  try {
-    await navigator.clipboard.writeText(generatedUrl.value)
+  const success = await copyToClipboard(generatedUrl.value)
+  if (success) {
     isCopied.value = true
     setTimeout(() => {
       isCopied.value = false
     }, 2000)
-  } catch (err) {
-    console.error('Failed to copy', err)
   }
 }
 
@@ -147,11 +144,11 @@ const insertText = (before: string, after: string = '') => {
   <div class="h-screen w-full flex flex-col bg-background text-primary overflow-hidden">
     <!-- Header -->
     <header class="w-full px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between border-b border-surface2 bg-surface shrink-0 z-10">
-      <div class="flex items-center gap-3">
-        <img src="/logo.svg" alt="Logo" class="w-8 h-8" />
+      <div class="flex items-center gap-3 sm:gap-4">
+        <img src="/logo.svg" alt="Logo" class="w-10 h-10 sm:w-12 sm:h-12" />
         <div>
-          <h1 class="text-lg sm:text-xl font-bold leading-tight">Obsidian Share</h1>
-          <p class="text-[10px] sm:text-xs text-secondary">Tus ideas, listas para compartir</p>
+          <h1 class="text-xl sm:text-2xl font-bold leading-tight tracking-tight">Obsidian Share</h1>
+          <p class="text-[11px] sm:text-sm text-secondary font-medium">Tus ideas, listas para compartir</p>
         </div>
       </div>
       
@@ -245,10 +242,10 @@ const insertText = (before: string, after: string = '') => {
       <!-- Result View -->
       <div v-else class="absolute inset-0 bg-background/95 backdrop-blur-sm z-10 flex flex-col items-center justify-center p-4">
         <div class="bg-surface rounded-xl p-8 sm:p-12 border border-surface2 shadow-2xl text-center max-w-2xl mx-auto w-full animate-in fade-in zoom-in duration-300">
-          <div class="w-16 h-16 flex items-center justify-center mx-auto mb-6">
-            <img src="/logo.svg" alt="Success" class="w-12 h-12" />
+          <div class="w-24 h-24 flex items-center justify-center mx-auto mb-6">
+            <img src="/logo.svg" alt="Success" class="w-20 h-20 drop-shadow-xl" />
           </div>
-          <h2 class="text-2xl sm:text-3xl font-bold mb-4 text-primary">¡Documento publicado!</h2>
+          <h2 class="text-3xl sm:text-4xl font-bold mb-4 text-primary tracking-tight">¡Documento publicado!</h2>
           <p class="text-secondary mb-8 max-w-md mx-auto leading-relaxed">Cualquier persona que tenga este enlace podrá ver el documento. No compartas información confidencial.</p>
           
           <div class="flex items-center gap-2 mb-8 bg-background p-3 rounded-lg border border-surface2 shadow-inner">

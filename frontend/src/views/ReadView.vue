@@ -2,6 +2,7 @@
 import { ref, onMounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { renderMarkdown } from '@/utils/markdown'
+import { copyToClipboard } from '@/utils/clipboard'
 import { Copy, AlertTriangle, Sun, Moon, Edit, Save, X, Lock } from 'lucide-vue-next'
 import { useDark, useToggle } from '@vueuse/core'
 
@@ -39,15 +40,13 @@ const handleContainerClick = async (event: MouseEvent) => {
   if (target && target.classList.contains('copy-btn')) {
     const code = target.getAttribute('data-code')
     if (code) {
-      try {
-        await navigator.clipboard.writeText(decodeURIComponent(code))
+      const success = await copyToClipboard(decodeURIComponent(code))
+      if (success) {
         const originalText = target.innerText
         target.innerText = 'Copiado'
         setTimeout(() => {
           target.innerText = originalText
         }, 2000)
-      } catch (err) {
-        console.error('Failed to copy code', err)
       }
     }
   }
@@ -136,14 +135,12 @@ const saveEdit = async () => {
 }
 
 const handleCopyLink = async () => {
-  try {
-    await navigator.clipboard.writeText(window.location.href)
+  const success = await copyToClipboard(window.location.href)
+  if (success) {
     isCopied.value = true
     setTimeout(() => {
       isCopied.value = false
     }, 2000)
-  } catch (err) {
-    console.error('Failed to copy', err)
   }
 }
 
@@ -160,11 +157,11 @@ onMounted(() => {
 <template>
   <div class="h-screen w-full flex flex-col bg-background text-primary overflow-hidden">
     <header class="w-full px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between border-b border-surface2 bg-surface shrink-0 z-10">
-      <router-link to="/" class="flex items-center gap-3 text-primary hover:text-accent transition-colors">
-        <img src="/logo.svg" alt="Logo" class="w-8 h-8" />
+      <router-link to="/" class="flex items-center gap-3 sm:gap-4 text-primary hover:text-accent transition-colors">
+        <img src="/logo.svg" alt="Logo" class="w-10 h-10 sm:w-12 sm:h-12" />
         <div>
-          <span class="font-bold text-lg sm:text-xl leading-tight">Obsidian Share</span>
-          <p class="text-[10px] sm:text-xs text-secondary hidden sm:block">Lector y Editor</p>
+          <h1 class="text-xl sm:text-2xl font-bold leading-tight tracking-tight">Obsidian Share</h1>
+          <p class="text-[11px] sm:text-sm text-secondary hidden sm:block font-medium">Lector y Editor</p>
         </div>
       </router-link>
       
@@ -213,8 +210,8 @@ onMounted(() => {
 
     <main class="flex-1 flex flex-col overflow-hidden relative w-full">
       <div v-if="isLoading" class="flex-1 flex flex-col items-center justify-center text-secondary">
-        <img src="/logo.svg" alt="Loading" class="animate-spin w-12 h-12 mb-4 opacity-80" />
-        Cargando documento...
+        <img src="/logo.svg" alt="Loading" class="animate-spin w-20 h-20 mb-6 drop-shadow-lg" />
+        <span class="text-lg font-medium text-primary">Cargando documento...</span>
       </div>
 
       <div v-else-if="error" class="flex-1 flex flex-col items-center justify-center text-center p-4">
